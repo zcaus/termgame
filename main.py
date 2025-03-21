@@ -3,7 +3,7 @@ import random
 import requests
 import unicodedata
 
-# Configura a página para o modo wide
+# Configuração da página para wide mode
 st.set_page_config(layout="wide")
 
 # --- Funções Auxiliares ---
@@ -48,7 +48,11 @@ def render_guess(guess, secret):
     return letter_boxes
 
 def validar_palavra(palavra):
-    """Valida se a palavra existe usando a API do Dicionário Aberto."""
+    """
+    Valida se a palavra existe usando a API do Dicionário Aberto.
+    Aqui, a validação é mantida, mas a escolha da palavra secreta
+    é feita a partir de uma lista interna ampliada.
+    """
     url = f"https://api.dicionario-aberto.net/word/{palavra}"
     try:
         response = requests.get(url)
@@ -79,13 +83,18 @@ def definir_limite(modo):
     else:
         return 9
 
-# Lista interna de palavras (fallback)
+# --- Lista Interna de Palavras Ampliada ---
+# Todas as palavras possuem 5 letras quando normalizadas (sem acentos).
 palavras_internas = [
-    'corpo', 'amigo', 'tarde', 'noite', 'mundo', 'sabor', 
-    'tempo', 'festa', 'chave', 'sonho', 'pão', 'café', 'árvore'
+    'amigo', 'corpo', 'tarde', 'noite', 'mundo', 'sabor', 'tempo', 'festa',
+    'chave', 'sonho', 'brisa', 'verde', 'firme', 'grato', 'letra', 'plena',
+    'feliz', 'certo', 'sorte', 'viver', 'magia', 'olhar', 'verbo', 'gusto',
+    'suave', 'breve', 'claro', 'manso', 'nobre', 'justo', 'forte', 'pilar',
+    'grama', 'palco', 'prado', 'torre', 'porto', 'combo', 'rosto', 'canto',
+    'bando'
 ]
 
-# Filtra palavras com tamanho correto (ignorando acentos)
+# Filtra as palavras que tenham exatamente 5 letras após remover acentos
 palavras_filtradas = [p for p in palavras_internas if len(remover_acentos(p)) == tamanho_palavra]
 if not palavras_filtradas:
     st.error(f"Não há palavras com {tamanho_palavra} letras disponíveis.")
@@ -95,7 +104,6 @@ if not palavras_filtradas:
 def mudar_modo():
     st.session_state["modo"] = st.session_state["_modo_select"]
     iniciar_jogo()
-    # Não usamos st.rerun() aqui, pois não tem efeito no callback.
 
 if "modo" not in st.session_state:
     st.session_state["modo"] = "Simples"
@@ -219,8 +227,8 @@ for tentativa, feedback_list in st.session_state["tentativas"]:
             st.markdown(feedback_list[idx], unsafe_allow_html=True)
 
 tentativas_feitas = len(st.session_state["tentativas"])
-limite_tentativas = definir_limite(st.session_state["modo"])
-if not all(st.session_state["acertos"]) and tentativas_feitas >= limite_tentativas:
+limite = definir_limite(st.session_state["modo"])
+if not all(st.session_state["acertos"]) and tentativas_feitas >= limite:
     st.error("Limite de tentativas atingido!")
     secret_words = " | ".join(secret.upper() for secret in st.session_state["palavras_secretas"])
     st.info(f"As palavras secretas eram: **{secret_words}**")
@@ -228,7 +236,7 @@ elif all(st.session_state["acertos"]):
     st.success("Parabéns! Você acertou todas as palavras!")
 
 # --- Campo de Entrada ---
-if not all(st.session_state["acertos"]) and tentativas_feitas < limite_tentativas:
+if not all(st.session_state["acertos"]) and tentativas_feitas < limite:
     st.text_input(
         "Digite sua palavra:",
         key="palpite_input",
