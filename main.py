@@ -3,8 +3,8 @@ import random
 import requests
 import unicodedata
 
-# Configuração da página para wide mode
-st.set_page_config(layout="wide")
+# Configura a página para o modo wide e define o título da aba
+st.set_page_config(page_title="TERMO DO ZCAUS", layout="wide")
 
 # --- Funções Auxiliares ---
 def remover_acentos(texto):
@@ -48,11 +48,7 @@ def render_guess(guess, secret):
     return letter_boxes
 
 def validar_palavra(palavra):
-    """
-    Valida se a palavra existe usando a API do Dicionário Aberto.
-    Aqui, a validação é mantida, mas a escolha da palavra secreta
-    é feita a partir de uma lista interna ampliada.
-    """
+    """Valida se a palavra existe usando a API do Dicionário Aberto."""
     url = f"https://api.dicionario-aberto.net/word/{palavra}"
     try:
         response = requests.get(url)
@@ -84,7 +80,6 @@ def definir_limite(modo):
         return 9
 
 # --- Lista Interna de Palavras Ampliada ---
-# Todas as palavras possuem 5 letras quando normalizadas (sem acentos).
 palavras_internas = [
     'amigo', 'corpo', 'tarde', 'noite', 'mundo', 'sabor', 'tempo', 'festa',
     'chave', 'sonho', 'brisa', 'verde', 'firme', 'grato', 'letra', 'plena',
